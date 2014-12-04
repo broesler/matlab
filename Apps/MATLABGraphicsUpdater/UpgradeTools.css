@@ -1,0 +1,257 @@
+/* Copyright 2014 The MathWorks, Inc. */  
+
+body{font-family:Calibri;}
+
+.AllMessages
+{
+    background-color:#DDDDDD;
+    border-style:none;
+    border-color:#DDDDDD;
+    border-bottom:solid #DDDDDD;
+    font-weight:bolder;
+}
+a.AllMessagesHover {background-color:#AAAAAA;border-style:none;border-color:#AAAAAA;border-bottom:solid #AAAAAA;}
+a.AllMessagesActive{background-color:white;border-style:solid;border-color:#DDDDDD;border-bottom:none;border-bottom-width:0px;}
+
+.High
+{
+background-color:#FF8080;border-style:none;border-color:#FF8080;border-bottom:solid #FF8080;
+font-weight:bolder;
+}
+a.HighHover{background-color:#CC6060;border-style:none;border-color:#CC6060;border-bottom:solid #CC6060;}
+a.HighActive{background-color:white;border-style:solid;border-color:#FF8080;border-bottom:none;}
+
+.Medium
+{
+background-color:#FFC980;border-style:none;border-color:#FFC980;border-bottom:solid #FFC980;
+font-weight:bolder;
+}
+a.MediumHover {background-color:#DDAA33;border-style:none;border-color:#DDAA33;border-bottom:solid #DDAA33;}
+a.MediumActive{background-color:white;border-style:solid;border-color:#FFC966;border-bottom:none;}
+
+.Low
+{
+background-color:#FFFFA0;border-style:none;border-color:#FFFFA0;border-bottom:solid #FFFFA0;
+font-weight:bolder;
+}
+a.LowHover {background-color:#DDDD80;border-style:none;border-color:#DDDD80;border-bottom:solid #DDDD80;}
+a.LowActive{background-color:white;border-color:#FFFFA0;border-style:solid;border-bottom:none;}
+
+
+
+.Error
+{
+    background-color:#CC2222;
+    font-weight:bolder;
+}
+a.ErrorHover{background-color:#771111;}
+a.ErrorActive{background-color:white;border-style:solid;border-color:#CC2222;border-bottom:none;}
+
+
+
+.Warning
+{
+background-color:#FFC966;
+font-weight:bolder;
+}
+a.WarningHover {background-color:#DDAA33;}
+a.WarningActive{background-color:white;border-style:solid;border-color:#FFC966;border-bottom:none;}
+
+
+.Display
+{
+background-color:#20B2AA;
+font-weight:bolder;
+}
+a.DisplayHover {background-color:#109999;}
+a.DisplayActive{background-color:white;border-style:solid;border-color:#20B2AA;border-bottom:none;}
+
+.Change
+{
+background-color:	#BBBB22;
+font-weight:bolder;
+}
+a.ChangeHover {background-color:#888811;}
+a.ChangeActive{background-color:white;border-style:solid;border-color:#BBBB22;;border-bottom:none;}
+
+.Performance
+{
+background-color:#F08080;
+font-weight:bolder;
+}
+a.PerformanceHover {background-color:#A04040;}
+a.PerformanceActive{background-color:white;border-style:solid;border-color:#F08080;border-bottom:none;}
+
+.Detection
+{
+background-color:#FFFFAA;
+font-weight:bolder;
+}
+a.DetectionHover {background-color:#DDDD88;}
+a.DetectionActive{background-color:white;border-color:#FFFFAA;border-style:solid;border-bottom:none;}
+
+
+.New
+{
+background-color:#BBAAFF;
+font-weight:bolder;
+}
+a.NewHover {background-color:#8899BB;}
+a.NewActive{background-color:#EEEEEE;border-color:#BBAAFF;border-style:solid;border-bottom:none;}
+
+.Style
+{
+background-color:#33DDDD;
+font-weight:bolder;
+}
+a.StyleHover {background-color:#11AAAA;}
+a.StyleActive{background-color:#EEEEEE;border-color:#33DDDD;border-style:solid;border-bottom:none;border-bottom-width:0px;}
+
+table, th, td
+ {
+ border: 1px solid black;
+ border-collapse:collapse;
+ vertical-align:top;
+ padding: 2px;
+ padding-left :5px;
+ padding-right :5px;
+overflow-y: auto;
+ }
+ 
+/* Main Report table */
+table.CodeReport {width:100%;table-layout:fixed;overflow-y: auto}
+table.CodeReportHeader {width:100%;table-layout:fixed;border-bottom-style:none }
+col.Completed{width:115px;horizontal-align:left} 
+col.FileLink  {width:150px;overflow-y:hidden}
+col.Issue{width:160px;} 
+col.HelpButtons{width:60px;} 
+col.Fix {width:100px;} 
+col.Code {vertical-align:top;}
+
+
+table.MessageSummary {width:98%;table-layout:fixed;height:120px;border-style:none;border-width:0px;border-color:transparent}
+th.Help {min-width:60%;vertical-align:top}
+th.MessageSummary {width:100px;vertical-align:top}
+
+.FixedCode {color:#6CAE40;}
+pre.FixedCode{color:#666666;display:inline}
+
+#fixedheader {position:fixed; width:100%;top:0px; }
+#TableWrapper {position:fixed; top: 86px; bottom: 5px;overflow: auto;  }
+#TableBody {position:fixed; top: 132px; bottom: 5px;overflow: auto;  }
+#TableHeaderRow{height:46px;}
+
+/* tabs */
+.tablist a {
+	float:left; 
+	margin-right:0.13em; 
+	display:block;
+	width:180px;
+	font-weight:bold;
+	text-align:center;
+	padding:4px;
+	text-decoration:none;
+}
+
+
+/* button group */
+.ButtonGroup{float:right; margin-right:20px}
+.IssueSelectorGroup{float:left; margin-right:20px}
+button.FixedSize{min-width:70px}    
+.show{display:inline;}
+.hide{display:none;}
+
+button.helpbutton, button.fixbutton, button.view {
+	font-size:12px;
+	padding-left:5px;
+	padding-right:5px;
+	background-color: white;
+	border-width: 1px;
+	border-radius:40px;
+	-webkit-border-radius:40px;
+	-moz-border-radius:40px;
+	text-align:center; 
+}
+
+
+
+button.helpbutton {
+	font-weight:bold;
+	color:#609ABD;
+	width: 19px;
+	border-color: #609ABD;
+}
+
+button.fixbutton {
+	color:#6CAE40;
+    min-width:50px;
+	border-color: #6CAE40;
+}
+
+button.view {
+	color:#0026ff;
+	border-color: #0026ff;
+}
+
+.FixColor
+{
+	color:#6CAE40;
+}
+.ManualColor
+{
+	color:#AAAAAA;
+}
+
+
+.helpbutton:hover, .fixbutton:hover {
+	box-shadow:0px 0px 3px #555;
+}
+
+div.window
+{
+    position: absolute;
+    width: 400px;
+    height: 300px;
+    border: #DDDDDD 3px outset;
+    background-color: white;
+    z-index:10;
+}
+
+div.titlebar
+{
+    position:absolute;
+    top: 0px; 
+    height: 18px;
+    width: 390px;
+    background: #609ABD;
+    border-bottom: groove 2px #AAAAAA;
+    padding: 3px 5px 2px 5px;
+    font: 12pt bold;
+}
+
+div.content
+{
+    position:absolute;
+    top: 25px;
+    height: 265px;
+    width: 390px;
+    padding: 5px;
+    overflow: auto;
+}
+
+.CloseButton
+{
+    position: absolute;
+    top: 1px;
+    left: 370px;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: #DDDDDD;
+    border-width: 1px;
+    -webkit-border-radius: 40px;
+    -moz-border-radius: 40px;
+    text-align: center;
+}
