@@ -24,9 +24,11 @@ function [R, sigmaAllowed, sigma] = srank(A, tol, plot_flag)
 %
 %       C = SRANK(A,tol,plot_flag);
 %
-%   See also SPINV, SVD
+%   See also PINV, SPINV, SVD, RANK.
 %
 
+%    Author: Bernie Roesler
+%   Created: 05/12/15
 %--------------------------------------------------------------------------
 % % TEST CODE
 % A = magic(100);
@@ -80,4 +82,4 @@ R = length(sigmaAllowed);
 
 
 end % function srank
-%--------------------------------------------------------------------------
+%==========================================================================

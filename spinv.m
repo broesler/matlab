@@ -24,10 +24,13 @@ function [C, sigmaAllowed, sigma] = spinv(A, tol, plot_flag)
 %
 %       C = SPINV(A,tol,plot_flag);
 %
-%   See also PINV, SVD
+%   See also PINV, SPINV, SVD.
 %
 
+%    Author: Bernie Roesler
+%   Created: 05/12/15
 %--------------------------------------------------------------------------
+
 % % TEST CODE
 % A = magic(100);
 % tol = 3;
@@ -91,4 +94,4 @@ C = V1 * (S1 \ U1');
 % % maxval(abs(    V'     -  inv(V) ))
 
 end % function spinv
-%--------------------------------------------------------------------------
+%==========================================================================

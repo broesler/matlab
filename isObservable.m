@@ -13,13 +13,13 @@ function [T, rankI, diagS] = isObservable(O)
 %   of O
 %
 %   ISOBSERVABLE makes us of the MATLAB function SVD to determine the
-%   rank of the controllability matrix. If the rank is equal to the number
+%   rank of the observability matrix. If the rank is equal to the number
 %   of rows in O (= n = number of rows in A = number of states).
 %
 %   See also SVD
 
 %--------------------------------------------------------------------------
-T = 0;
+T = false;
 
 % Decompose O using singular-value decomposition, O = U*S*V', where S is a
 % diagonal matrix of the eigenvalues of O. The number of non-negative
@@ -40,7 +40,7 @@ rankI = length(I);
 n     = length(diagS);
 
 if rankI == n
-    T = 1;
+    T = true;
 end
 
 end % function isObservable

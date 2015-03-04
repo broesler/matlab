@@ -1,5 +1,5 @@
 function [A, B] = powerc2d(Ac, Bc, dt, n)
-
+%
 % POWERC2D convert continuous-time ss system to discrete time using power
 %   series.
 %
@@ -9,17 +9,21 @@ function [A, B] = powerc2d(Ac, Bc, dt, n)
 %          step of dt, using n terms in the series.
 %
 
-if nargin == 3
+%    Author: Bernie Roesler
+%   Created: 05/12/15
+%--------------------------------------------------------------------------
+
+if nargin < 4
     n = 5;
 end
 
-A = 0*Ac;
-B = 0*Bc;
+A = zeros(size(Ac));
+B = zeros(size(Bc));
 
-for ii = 0:n
-    A = A + (1/factorial(ii)) * Ac^ii * dt^ii;
+for i = 0:n
+    A = A + (1/factorial(i)) * Ac^i * dt^i;
     
-    B = B + ((1/factorial(ii+1)) * Ac^ii * dt^(ii+1)) * Bc ; 
+    B = B + ((1/factorial(i+1)) * Ac^i * dt^(i+1)) * Bc ; 
 end
 
 end % function powerc2d
