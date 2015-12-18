@@ -40,7 +40,7 @@
 %   $Revision: 5.21 $  $Date: 2002/06/05 20:05:16 $ 
 %-------------------------------------------------------------
 
-set(gca, 'color', 'blue');
+% set(gca, 'color', 'blue');
 % Arrow head parameters
 alpha = 0.33; % Size of arrow head relative to the length of the vector
 beta = 0.23;  % Width of the base of the arrow head relative to the length
@@ -171,6 +171,6 @@ end
 if ~hold_state, hold off, view(2); set(ax,'NextPlot',next); end
 
 if nargout>0, hh = [h1;h2;h3]; end
-set(gca, 'color', [0 0 0],'Xcolor','w','Ycolor','w');
-set(gcf, 'color', [0 0 0]);
-set(gcf, 'InvertHardCopy', 'off');
+% % set(gca, 'color', [0 0 0],'Xcolor','w','Ycolor','w');
+% % set(gcf, 'color', [0 0 0]);
+% % set(gcf, 'InvertHardCopy', 'off');

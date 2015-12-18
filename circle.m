@@ -1,4 +1,4 @@
-function h = circle(r, xc, yc, linestyle)
+function h = circle(r, xc, yc, linestyle, color)
 %
 % CIRCLE plot a circle of radius r, centered at (xc,yc)
 %
@@ -30,8 +30,8 @@ if nargin == 0          % Plot a unit circle centered at the origin
     r = 1;
     xc = 0;
     yc = 0;
-    linestyle = 'k-';   % Default linestyle is solid black
-    
+    linestyle = '-';   % Default linestyle is solid black
+    color = 'k';
 elseif nargin == 1
     
     if ischar(r)        % check if argument is a linestyle
@@ -46,11 +46,14 @@ elseif nargin == 1
     
 elseif nargin == 2      % could just give x-value, keep on y-axis
     yc = 0;
-    linestyle = 'k-';
-    
-elseif nargin < 4
-    linestyle = 'k-';
+    linestyle = '-';
+    color = 'k';
 
+elseif nargin < 4
+    linestyle = '-';
+    color = 'k';
+elseif nargin < 5
+    color = 'k';
 end
 
 % Define coordinates
@@ -59,10 +62,10 @@ y = yc + r*sin(theta);
 
 if nargout == 1
     % Return handle to the circle for style changes
-    h = plot(x,y, linestyle);
+    h = plot(x,y, linestyle, 'color', color);
 else
     % suppress output of 
-    plot(x,y, linestyle);
+    plot(x,y, linestyle, 'color', color);
 end
 
 return

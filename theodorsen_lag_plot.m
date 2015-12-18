@@ -1,5 +1,5 @@
 % Theodorsen Lag Function - Replicates Figure 7.10 in Drela
-clr,
+clr;
 
 k = linspace(0, 2*pi, 1000);
 % Ck = besselh(1,2,k) ./ (besselh(1,2,k) + 1i*besselh(0,2,k));
@@ -27,7 +27,7 @@ xlabel('k \equiv \omega c / 2U')
 title('Theodorsen Lag Function Magnitude')
 legend('Re\{C(k)\}', 'Im\{C(k)\}', '|C(k)|')
 
-%-----------------------------------------
+%-----------------------------------------     
 % Plot Angle
 figure(1), subplot(1,2,2), hold all
 plot(k, angle(Ck)*180/pi, 'k')

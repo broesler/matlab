@@ -1,8 +1,11 @@
 function blackfig(fig_handle, legend_handle)
-
 % BLACKFIG set background color of figure to black
-% Set background color to black (axes to white)
+%   BLACKFIG()  Set background color to black (axes to white)
 %
+
+% Created: 12/4/2014
+%  Author: Bernie Roesler
+%--------------------------------------------------------------------------
 
 % Use current axes
 ax_handle = gca;
