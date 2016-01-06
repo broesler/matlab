@@ -9,17 +9,57 @@ function saveastight( h, filename, format )
 %  Author: Bernie Roesler
 %--------------------------------------------------------------------------
 
-% Change paper units and figure units to inches
-set(h, 'PaperUnits','inches')
-set(h, 'Units','inches')
+% get all axes
+a = findall(h,'type','axes');
 
-% Get current position of figure
-pos = get(h,'Position');
+% expand plot view
+for i = 1:length(a)
+    % Ignore axes corresponding to legends
+    if (strcmp(get(a(i),'Tag'),'legend'))
+        continue
+    end
+    ti = get(a(i),'TightInset');
+    op = get(a(i),'OuterPosition');
+    set(a(i),'Position',[op(1)+ti(1) op(2)+ti(2) op(3)-ti(3)-ti(1) op(4)-ti(4)-ti(2)]);
+end
 
-% Set the paper size to match the figure
-set(h, 'PaperSize', [pos(3) pos(4)]);
-set(h, 'PaperPositionMode', 'auto');
-set(h, 'PaperPosition',[0 0 pos(3) pos(4)]);
+% calculate papersize
+set(a,'units','centimeters');
+xpapermax = -inf; 
+xpapermin = +inf;
+ypapermax = -inf; 
+ypapermin = +inf;
+
+for i = 1:length(a)
+    pos = get(a(i),'Position');
+    ti = get(a(i),'TightInset');
+
+    if (pos(1)+pos(3)+ti(1)+ti(3) > xpapermax) 
+        xpapermax = pos(1)+pos(3)+ti(1)+ti(3);
+    end
+
+    if (pos(1) < xpapermin) 
+        xpapermin = pos(1);
+    end
+
+    if (pos(2)+pos(4)+ti(2)+ti(4) > ypapermax) 
+        ypapermax = pos(2)+pos(4)+ti(2)+ti(4);
+    end
+
+    if (pos(2) < ypapermin) 
+        ypapermin = pos(2);
+    end
+end
+% paperwidth = xpapermax - xpapermin;
+% paperhight = ypapermax - ypapermin;
+paperwidth  = xpapermax;
+paperheight = ypapermax;
+
+% adjust the papersize
+set(h, 'PaperUnits','centimeters');
+set(h, 'PaperSize', [paperwidth paperheight]);
+set(h, 'PaperPositionMode', 'manual');
+set(h, 'PaperPosition',[0 0 paperwidth paperheight]);
 
 % Save the figure
 switch format
