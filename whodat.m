@@ -22,25 +22,11 @@
 %===============================================================================
 function S = whodat(varargin)
 
-% % The following commented code does not work, because 
-% %+    A = evalin('caller','whos N x y') 
-% %+ is an invalid MATLAB expression, but 
-% %+    evalin('caller', 'A = whos('N','x','y')')
-% %+ just assigns A in the caller's workspace, defeating the purpose.
-
-% Allow variables to be given as arguments
-% expr = 'A = whos';
-% if nargin > 0
-%     arglist = '(';
-%     for i = 1:length(varargin)-1
-%         arglist = [arglist '''' varargin{i} ''','];
-%     end
-%     arglist = [arglist '''' varargin{i+1} ''''];
-%     arglist = [arglist ')'];
-%     expr = [expr arglist];
-% end
-% expr = [expr ';'];
-% evalin('caller', expr);
+% Allowing arguments like whos does not work, because 
+%+    A = evalin('caller','whos N x y') 
+%+ is an invalid MATLAB expression, but 
+%+    evalin('caller', 'A = whos('N','x','y')')
+%+ just assigns A in the caller's workspace, defeating the purpose.
 
 % Structure of variables in calling function workspace (i.e. main)
 A = evalin('caller','whos');
@@ -48,7 +34,8 @@ N = numel(A);
 
 % Arrays to be printed in each column
 names       = cell(N,1);
-sizes       = cell(N,1);
+sizes1      = cell(N,1);
+sizes2      = cell(N,1);
 classes     = cell(N,1);
 mins        = cell(N,1);
 maxes       = cell(N,1);
@@ -66,8 +53,8 @@ for i = 1:N
     % Report actual values if numeric
     temp = evalin('caller', A(i).name);
     if (isnumeric(temp))
-        mins{i}  = num2str(min(temp));
-        maxes{i} = num2str(max(temp));
+        mins{i}  = num2str(min(temp(:)));
+        maxes{i} = num2str(max(temp(:)));
     else
         mins{i} = '-';
         maxes{i} = '-';
