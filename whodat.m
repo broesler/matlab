@@ -71,8 +71,8 @@ for i = 1:N
     % Report actual values if numeric
     temp = evalin('caller', A(i).name);
     if (isnumeric(temp))
-        mins{i}  = num2str(min(temp(:)));
-        maxes{i} = num2str(max(temp(:)));
+        mins{i}  = sprintf('%.5g', min(temp(:)));
+        maxes{i} = sprintf('%.5g', max(temp(:)));
     else
         mins{i} = '-';
         maxes{i} = '-';
