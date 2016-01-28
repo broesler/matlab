@@ -1,4 +1,5 @@
-function [P,Y,V] = sarx(u,y,p,tol,plot_flag)
+% function [P,Y,V] = sarx(u,y,p,tol,plot_flag)
+function [Y,V] = sarx(u,y,p)
 %
 % SARX Solve ARX system ID problem Y = PV.
 %
@@ -52,13 +53,13 @@ if nargin < 3
     p = 2;          % Default values of p and tol
 end
 
-if nargin < 4
-    tol = 3;
-end
+% if nargin < 4
+%     tol = 3;
+% end
 
-if nargin < 5
-    plot_flag = 0;
-end
+% if nargin < 5
+%     plot_flag = 0;
+% end
 
 % Initialize matrices
 m = size(y,2);   % y is size < L x m >
@@ -78,24 +79,20 @@ Y = y(p+1:L+1,:)';        % Need row vector for Y
 % move in blocks of m rows, each y is < 1 x m >
 % Need index shift 1:m*p --> 0:m*p-1 to account for MATLAB 1-indexing
 for i = 0:m:m*p-1   
-    
     V(i+1:i+m,:)   = y(p-i:L-i,:)';
-    
 end
     
 % u block
 % move in blocks of r rows, each u is < 1 x r >
 for i = 0:r:r*p-1         
-    
     V(i+p+1:i+p+r,:) = u(p-i:L-i,:)';
-    
 end
 
-% Find Vinv
-Vinv = spinv(V,tol,plot_flag);
-
-% Calculate P = YVinv
-P = Y*Vinv;
+% % Find Vinv
+% Vinv = spinv(V,tol,plot_flag);
+%
+% % Calculate P = YVinv
+% P = Y*Vinv;
 
 
 end % function
