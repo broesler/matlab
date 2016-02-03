@@ -1,4 +1,4 @@
-function O = observability(C, A, n)
+function O = observability(C,A)
 %
 % OBSERVABILITY determine the observability of a system from {A,B}
 %
@@ -6,28 +6,30 @@ function O = observability(C, A, n)
 %       formula O = [C; CA; ...; CA^(n-1)], where n is the number of
 %       states. A is sized n x n, B is n x r (r is the number of inputs).
 
-if nargin < 3       % take n from size(A,1), else n is given
-    n = size(A,1);  % number of rows in A == number of states
+%  Author: Bernie Roesler
+% Created: 05/14/14
+%
+% Last Modified: 02/03/2016, 17:24
+%-------------------------------------------------------------------------------
+
+% Input Checking
+if (size(A,1) ~= size(A,2))
+    error('A matrix must be square.')
 end
 
-m = size(C,1);      % number of outputs (always) = # rows in C
+if (size(C,2) ~= size(A,2))
+    error('A and C matrices must have same number of columns.')
+end
 
-Orows = m*n;        % could add more rows to O than minimum
-Ocols = size(A,2);  % (always) number of states = number of rows/cols in A
+% Build observability matrix
+n = size(A,1);  % number of rows in A == number of states
+m = size(C,1);  % number of outputs (always) = # rows in C
 
-O = zeros(Orows, Ocols);
+O = zeros(m*n, n);
           
-row_start = 1;
-row_end   = m;
-
 for i = 0:(n-1)
-   
-    O(row_start:row_end, :) = C * A^i;
-    
-    row_start = row_start + m;
-    row_end   = row_end   + m;
+    O(i*m+1:i*m+m, :) = C * A^i;
 end
 
-
-end % function observability
-%--------------------------------------------------------------------------
+%===============================================================================
+%===============================================================================

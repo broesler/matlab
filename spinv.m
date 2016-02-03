@@ -5,8 +5,7 @@ function [C, sigmaAllowed, sigma] = spinv(A, tol, plot_flag)
 %   C = SPINV(A) returns the pseudo-inverse of a rectangular matrix A,
 %       using the default parameters.
 %
-%   C = SPINV(A, tol) uses only the singular values greater than tol orders
-%       of magnitude less than the maximum singular value
+%   C = SPINV(A, tol) uses only the singular values greater than tol 
 %
 %   C = SPINV(A, tol, 1) plots the singular values, showing those within
 %       the chosen tolerance
@@ -29,15 +28,20 @@ function [C, sigmaAllowed, sigma] = spinv(A, tol, plot_flag)
 
 %    Author: Bernie Roesler
 %   Created: 05/12/15
+%
+% Last Modified: 02/02/2016, 17:36
+%
 %--------------------------------------------------------------------------
 
 % % TEST CODE
+% clear all; close all; clc;
+% nargin = 3;
 % A = magic(100);
-% tol = 3;
+% tol = 1e-9;
 % plot_flag = 1;
 
 if nargin == 1
-    tol = 3;        % Default order of magnitude
+    tol = 1e-9;        % Default order of magnitude
     plot_flag = 0;
 elseif nargin == 2
     plot_flag = 0;
@@ -46,15 +50,12 @@ end
 % (1) -------------------------------- Perform singular value decomposition
 [U,S,V] = svd(A);
 
-% singular values are on the diagonal of S, ordered largest -> smallest
+% singular values are on the diagonal of S, ordered largest to smallest
 sigma = diag(S);   
 
 %----------------------------------------------- Find number of sigma > TOL
-%   Minimum allowed sigma is tol orders of magnitude < sigma(1)
-minAllowed = floor(sigma(1)) / 10^(tol);
-
-% Find the indices of all sigmas > minAllowed
-ind = find( sigma >= minAllowed );
+% Find the indices of all sigmas > tol
+ind = find( sigma >= tol );
 
 % Vector of all allowed sigmas
 sigmaAllowed = sigma(ind);
@@ -70,7 +71,11 @@ if plot_flag == 1
     semilogy(ind, sigmaAllowed, 'bx', 'MarkerSize', 10)
     
     % Include line at cutoff point
-    semilogy([1 length(sigma)], [minAllowed minAllowed], 'r--', 'LineWidth', 1)
+    semilogy([1 length(sigma)], [tol tol], 'r--', 'LineWidth', 1)
+
+    xlabel('Index')
+    ylabel('\sigma')
+
     grid on
     figure(gcf)
 end
@@ -87,12 +92,11 @@ V1 = V(:,1:maxind);
 C = V1 * (S1 \ U1');
 
 
-% % % TEST CODE: THESE SHOULD ALL BE 0!!
-% % maxval(abs( U1*S1*V1' -      A  ))
-% % maxval(abs(    C      - pinv(A) ))
-% % maxval(abs(    U'     -  inv(U) ))
-% % maxval(abs(    V'     -  inv(V) ))
+% % TEST CODE: THESE SHOULD ALL BE 0!!
+% maxval(abs( U1*S1*V1' -      A  ))
+% maxval(abs(    C      - pinv(A) ))
+% maxval(abs(    U'     -  inv(U) ))
+% maxval(abs(    V'     -  inv(V) ))
 
-end % function spinv
 %==============================================================================
 %==============================================================================
