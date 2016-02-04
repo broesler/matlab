@@ -24,7 +24,7 @@ for i = 1:length(a)
 end
 
 % calculate papersize
-set(a,'units','centimeters');
+set(a,'units','points');
 xpapermax = -inf; 
 xpapermin = +inf;
 ypapermax = -inf; 
@@ -55,8 +55,13 @@ end
 paperwidth  = xpapermax;
 paperheight = ypapermax;
 
+% % Original code:
+% pos = get(gcf, 'Position');
+% paperwidth  = pos(3);
+% paperheight = pos(4);
+
 % adjust the papersize
-set(h, 'PaperUnits','centimeters');
+set(h, 'PaperUnits','points');
 set(h, 'PaperSize', [paperwidth paperheight]);
 set(h, 'PaperPositionMode', 'manual');
 set(h, 'PaperPosition',[0 0 paperwidth paperheight]);
@@ -95,5 +100,5 @@ end
 % Reset the units of h to the default 'pixels' for future calcs
 set(h, 'Units', 'pixels')
 
-
-end
+%===============================================================================
+%===============================================================================
