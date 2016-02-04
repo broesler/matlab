@@ -1,4 +1,4 @@
-function [T, rankind, sigma] = isObservable(O,TOL)
+function [T, rankO, sigma] = isObservable(O,TOL)
 %
 % ISOBSERVABLE determine if a system is observable based on its
 %   observability matrix
@@ -6,49 +6,44 @@ function [T, rankind, sigma] = isObservable(O,TOL)
 %   T = ISOBSERVABLE(O) returns a logical 1 for an observable system, 0
 %   if system is unobservable
 %
-%   [T, rankind] = ISOBSERVABLE(O) returns a logical value and the rank of
+%   [T, rankO] = ISOBSERVABLE(O) returns a logical value and the rank of
 %   the observability matrix
 %
-%   [T, rankin, sigma] = ISOBSERVABLE(O) also returns the singular values
+%   [T, rankO, sigma] = ISOBSERVABLE(O) also returns the singular values
 %   of O
 %
 %   ISOBSERVABLE makes us of the MATLAB function SVD to determine the
 %   rank of the observability matrix. If the rank is equal to the number
 %   of rows in O (= n = number of rows in A = number of states).
 %
-%   See also SVD
+%   See also OBSERVABILITY, SVD
 
 %==============================================================================
 %     File: isObservable.m
 %  Created: 5/12/14
 %   Author: Bernie Roesler
 %
-% Last Modified: 02/03/2016, 17:32
+% Last Modified: 02/04/2016, 16:17
 %===============================================================================
 
 % Count all non-negative indices. TOL is tolerance within which values will
 % be considered 0
 if (nargin < 2)
-    TOL = 1e-13;
+    TOL = 1e-9;
 end
 
 % initialize output variable
 T = false;
 
-% Decompose O using singular-value decomposition, O = U*S*V', where S is a
-% diagonal matrix of the eigenvalues of O. The number of non-negative
-% eigenvalues is the rank.
-[U,S,V] = svd(O);
+n = size(O,1);
 
-% Take the diagonal of S
-sigma = diag(S);
+% srank returns:
+%   [ the rank of O, 
+%     the allowed singular values of O (ignored here),
+%     all of the singular values of O ]
+[rankO, ~, sigma] = srank(O, TOL);       % find using SVD
 
-ind = find(abs(sigma) > TOL);
-
-rankind = length(ind);
-n       = length(sigma);
-
-if (rankind == n)
+if (rankO == n)
     T = true;
 end
 
