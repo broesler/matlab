@@ -5,8 +5,7 @@ function [R, sigmaAllowed, sigma] = srank(A, tol, plot_flag)
 %   C = SRANK(A) returns the pseudo-inverse of a rectangular matrix A,
 %       using the default parameters.
 %
-%   C = SRANK(A, tol) uses only the singular values greater than tol orders
-%       of magnitude less than the maximum singular value
+%   C = SRANK(A, tol) uses only the singular values greater than tol
 %
 %   C = SRANK(A, tol, 1) plots the singular values, showing those within
 %       the chosen tolerance
@@ -18,8 +17,8 @@ function [R, sigmaAllowed, sigma] = srank(A, tol, plot_flag)
 %       singular values
 %   
 %   Example:
-%       A = magic(100);
-%       tol = 3;
+%       A = randn(5,3)*randn(3,10);   % 5 x 10 matrix not full rank
+%       tol = 1e-9;
 %       plot_flag = 1;
 %
 %       C = SRANK(A,tol,plot_flag);
@@ -29,17 +28,22 @@ function [R, sigmaAllowed, sigma] = srank(A, tol, plot_flag)
 
 %    Author: Bernie Roesler
 %   Created: 05/12/15
+%
+% Last Modified: 02/04/2016, 16:25
 %--------------------------------------------------------------------------
-% % TEST CODE
-% A = magic(100);
-% tol = 3;
+
+% UNCOMMENT TO TEST CODE:
+% clear all; close all; clc;
+% nargin = 3;
+% A = randn(5,3)*randn(3,10);   % 5 x 10 matrix of rank 3
+% tol = 1e-9;
 % plot_flag = 1;
 
-if nargin < 2
-    tol = 3;        % Default order of magnitude
+if (nargin < 2)
+    tol = 1e-9;        % Default order of magnitude
 end
 
-if nargin < 3
+if (nargin < 3)
     plot_flag = 0;  % Don't plot by default
 end
     
@@ -49,12 +53,8 @@ end
 % singular values are on the diagonal of S, ordered largest -> smallest
 sigma = diag(S);   
 
-% Find number of sigma > TOL
-%   Minimum allowed sigma is tol orders of magnitude < sigma(1)
-minAllowed = floor(sigma(1)) / 10^(tol);
-
-% Find the indices of all sigmas > minAllowed
-ind = find( sigma >= minAllowed );
+% Find the indices of all sigmas > tol
+ind = find( sigma >= tol );
 
 % Vector of all allowed sigmas
 sigmaAllowed = sigma(ind);
@@ -70,16 +70,15 @@ if plot_flag == 1
     semilogy(ind, sigmaAllowed, 'bx', 'MarkerSize', 20)
     
     % Include line at cutoff point
-    semilogy([1 length(sigma)], [minAllowed minAllowed], 'r--', 'LineWidth', 1)
-    grid on
+    semilogy([1 length(sigma)], [tol tol], 'r--', 'LineWidth', 1)
     
-    title('Singular Values')
-    figure(gcf)
+    xlabel('Index')
+    ylabel('\sigma')
+    grid on
 end
 
 % True rank of matrix
 R = length(sigmaAllowed);
 
-
-end % function srank
+%==========================================================================
 %==========================================================================

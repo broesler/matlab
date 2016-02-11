@@ -17,8 +17,8 @@ function [C, sigmaAllowed, sigma] = spinv(A, tol, plot_flag)
 %       singular values
 %   
 %   Example:
-%       A = magic(100);
-%       tol = 3;
+%       A = randn(5,3)*randn(3,10);   % 5 x 10 matrix not full rank
+%       tol = 1e-9;
 %       plot_flag = 1;
 %
 %       C = SPINV(A,tol,plot_flag);
@@ -29,21 +29,21 @@ function [C, sigmaAllowed, sigma] = spinv(A, tol, plot_flag)
 %    Author: Bernie Roesler
 %   Created: 05/12/15
 %
-% Last Modified: 02/02/2016, 17:36
-%
+% Last Modified: 02/04/2016, 15:57
 %--------------------------------------------------------------------------
 
-% % TEST CODE
+% % UNCOMMENT TO TEST CODE:
 % clear all; close all; clc;
 % nargin = 3;
-% A = magic(100);
+% A = randn(5,3)*randn(3,10);   % 5 x 10 matrix not full rank
 % tol = 1e-9;
 % plot_flag = 1;
 
-if nargin == 1
+if (nargin < 2)
     tol = 1e-9;        % Default order of magnitude
-    plot_flag = 0;
-elseif nargin == 2
+end
+
+if (nargin < 3)
     plot_flag = 0;
 end
     
@@ -77,7 +77,6 @@ if plot_flag == 1
     ylabel('\sigma')
 
     grid on
-    figure(gcf)
 end
 
 % (2) ----------------------- Extract square of S using only allowed sigmas

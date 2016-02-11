@@ -1,39 +1,36 @@
-function [y,x] = mydlsim(A,B,C,D,u,x0)
-% MYDLSIM  Simulation of discrete-time linear systems.
-%    [Y,X] = MYDLSIM(A,B,C,D,U)  returns the response of the discrete system:
+function [xhat,yhat] = observe(A,B,C,D,G,u,y,x0)
+% OBSERVE create state prediction from input and output histories 
 %
-%        x[k+1] = Ax[k] + Bu[k]
-%        y[k]   = Cx[k] + Du[k]
+%   xhat = OBSERVE(A,B,C,D,G,u,y) returns the system state estimate given the
+%       discrete-time system matrices {A,B,C,D}, the observer gain matrix G,
+%       the input history u, and the output history y assuming 0 initial
+%       conditions:
 %
-%    to input sequence U.  Matrix U must have as many columns as there
-%    are inputs, U.  Each column of U corresponds to a new time point.
-%    MYDLSIM(A,B,C,D,U,X0) can be used if initial conditions exist.
+%       xhat(k+1) = A*xhat(k) + B*u(k) - G*[y(k) - yhat(k)]
+%         yhat(k) = C*xhat(k) + D*u(k)
 %
-%    MYDLSIM returns the output and state time history in the matrices Y and X.
-%    No plot is drawn on the screen.  Y has as many rows as there
-%    are outputs and LENGTH(U) columns.  X has as many rows as there
-%    are states and LENGTH(U) columns.
+%   xhat = OBSERVE(A,B,C,D,G,u,y,x0) allows specification of non-zero IC's
 %
-%    INPUTS:
+%   [xhat,yhat] = OBSERVE(A,B,C,D,G,u,y,x0) also returns the estimated output
+%
+%   INPUTS:
 %       A   n x n matrix
 %       B   n x r matrix
 %       C   q x n matrix
 %       D   q x r matrix
+%       G   n x 1 vector
 %       u   l x r matrix, u(k,:) is 1 x r, l is number of time steps
+%       y   l x q matrix, y(k,:) is 1 x q, l is number of time steps
 %       x0  n x 1 vector  initial condition
 %
-%    OUTPUTS:
-%       y   l x q matrix, y(k,:) is 1 x q, l is number of time steps
-%       x   l x n matrix, x(k,:) is 1 x n, l is number of time steps
-%
-%    See also:  LSIM, STEP, IMPULSE, INITIAL.
+%   OUTPUTS:
+%       xhat   l x n matrix, xhat(k,:) is 1 x n, l is number of time steps
+%       yhat   l x q matrix, yhat(k,:) is 1 x q, l is number of time steps
 
-%==============================================================================
-%     File: mydlsim.m
-%  Created: 01/28/2016, 14:26
+%  Created: 02/11/2016, 14:48
 %   Author: Bernie Roesler
 %
-% Last Modified: 02/11/2016, 15:08
+% Last Modified: 02/11/2016, 15:52
 %===============================================================================
 
 %-------------------------------------------------------------------------------
@@ -55,6 +52,11 @@ if (size(D,2) ~= size(B,2))
     error('B and D matrices must have same number of columns.')
 end
 
+if (size(u,2) ~= size(B,2))
+    error(['u is formatted as u(k,:) where k is the time-step.' ...
+           ' u and B must have the same number of columns.'])
+end
+
 % Assign sizes
 n = size(A,1);      % number of system states
 q = size(C,1);      % number of outputs
@@ -62,29 +64,33 @@ r = size(B,2);      % number of inputs
 l = size(u,1);      % number of time steps
 
 % Check for IC's
-if (nargin < 6)
+if (nargin < 8)
+    % Assume zero IC
     x0 = zeros(n,1);
 elseif (size(x0,1) ~= size(A,1))
     error('A matrix and x0 vector must have same number of rows.')
 end
 
 %-------------------------------------------------------------------------------
-%       Compute system output history
+%       Run state estimator
 %-------------------------------------------------------------------------------
 % Initialize output
-y = zeros(l,q);     % y(k) is <qx1> vector
-x = zeros(l,n);     % x(k) is <nx1> vector
+yhat = zeros(l,q);     % y(k) is <qx1> vector
+xhat = zeros(l,n);     % x(k) is <nx1> vector
 
 % Initial conditions
-x(1,:) = x0';
+xhat(1,:) = x0';
 
 for k = 1:l-1
-    y(k,:)   = C*x(k,:)' + D*u(k,:)';
-    x(k+1,:) = A*x(k,:)' + B*u(k,:)';
+    yhat(k,:)   = C*xhat(k,:)' + D*u(k,:)';
+    xhat(k+1,:) = A*xhat(k,:)' + B*u(k,:)' - G*(y(k,:)' - yhat(k,:)');
+
+    % OR:
+    % xhat(k+1,:) = (A + G*C)*xhat(k,:)' + (B + G*D)*u(k,:)' - G*y(k,:)';
 end
 
 % Final output
-y(l,:) = C*x(l,:)' + D*u(l,:)';
+yhat(l,:) = C*xhat(l,:)' + D*u(l,:)';
 
 %===============================================================================
 %===============================================================================
