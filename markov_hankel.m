@@ -27,12 +27,12 @@ function H = markov_hankel(Y,N,m,k)
 %  OUTPUTS:
 %    H  m*q x m*r Hankel matrix
 %
-%  See also HANKEL
+%  See also MARKOV, HANKEL
 
 %  Created: 02/11/2016, 17:55
 %   Author: Bernie Roesler
 %
-% Last Modified: 02/15/2016, 16:47
+% Last Modified: 02/15/2016, 17:50
 %===============================================================================
 
 % Input checking
@@ -52,8 +52,12 @@ end
 
 % Build H matrix
 for i = k:k+m-1
-    % Shift Y cols by r to skip D (Y = [ D CB CAB ... ]
-    H(i*q+1:i*q+q, :) = Y(:, [i*r+1:i*r+m*r] + r);
+    j = i - k; 
+    H(j*q+1:j*q+q, :) = Y(:, [i*r+1:i*r+m*r] + r);
+
+    % NOTE:
+    %+  H row indices do not change with k
+    %+  Shift Y cols by r to skip D (Y = [ D CB CAB ... ])
 end
 
 %===============================================================================
