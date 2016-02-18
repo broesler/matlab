@@ -1,6 +1,7 @@
-% WHODAT whos but with custom formatting to show max/min values
+function S = whodat(varargin)
+% WHODAT whos but with custom formatting to show max/min values {{{
 %
-% A = WHODAT returns a structure of all variables in workspace, with fields:
+%  A = WHODAT returns a structure of all variables in workspace, with fields:
 %      name           char
 %      size           1x2 double
 %      bytes          1x1 double
@@ -13,16 +14,25 @@
 %         level           int
 %      persistent     logical
 %
-%   See also WHOS
+%  Example:
+%    a = exp(1)*1e8;                                    % large number
+%    b = 15;                                            % standard float
+%    v = [-8:6];                                        % vector
+%    c = v + 1i*0.25*v;                                 % complex vector
+%    l = true;                                          % logical
+%    str = 'this is a very very big string.';           % string
+%    t = struct('a',a,'b',b,'c',c,'v',v,'str',str);     % struct
+%    r = {a, b, c; v, str, t};                          % cell array
 
-%===============================================================================
-%     File: whodat.m
+%    whodat
+%
+%  See also WHOS
+
 %  Created: 01/06/2016, 14:50
 %   Author: Bernie Roesler
-%===============================================================================
-function S = whodat(varargin)
+%============================================================================}}}
 
-% Allowing arguments like whos does not work, because 
+% NOTE: Allowing arguments like whos does not work, because 
 %+    A = evalin('caller','whos N x y') 
 %+ is an invalid MATLAB expression, but 
 %+    evalin('caller', 'A = whos('N','x','y')')
@@ -44,7 +54,7 @@ sizes1      = cell(N,1);
 sizes2      = cell(N,1);
 classes     = cell(N,1);
 mins        = cell(N,1);
-maxes       = cell(N,1);
+maxs        = cell(N,1);
 attributes  = cell(N,1);
 ndim        = zeros(N,1);
 
@@ -52,9 +62,12 @@ ndim        = zeros(N,1);
 %       loop over each variable to build columns
 %-------------------------------------------------------------------------------
 for i = 1:N
+    % Varable names
     names{i} = A(i).name;
 
-    % Check for number of dimensions
+    %---------------------------------------------------------------------------
+    %   Size column
+    %---------------------------------------------------------------------------
     ndim(i) = length(A(i).size);
 
     sizes1{i} = num2str(A(i).size(1));
@@ -66,46 +79,134 @@ for i = 1:N
         sizes2{i} = sprintf('%d-D', ndim(i));
     end
 
+    %---------------------------------------------------------------------------
+    %   Type of variable
+    %---------------------------------------------------------------------------
     classes{i} = A(i).class;
 
-    % Report actual values if numeric
+    %---------------------------------------------------------------------------
+    %   Max/min values
+    %---------------------------------------------------------------------------
     temp = evalin('caller', A(i).name);
-    if (isnumeric(temp))
-        mins{i}  = sprintf('%.5g', min(temp(:)));
-        maxes{i} = sprintf('%.5g', max(temp(:)));
+
+    if isnumeric(temp)
+        if isreal(temp)
+            mins{i} = sprintf('%.5g', min(temp(:)));
+            maxs{i} = sprintf('%.5g', max(temp(:)));
+        else % iscomplex...
+            nr_min = min(temp(:));
+            nr_max = max(temp(:));
+
+            rstr_min = sprintf('%.5g',  abs(real(nr_min)));
+            istr_min = sprintf('%.5gi', abs(imag(nr_min)));
+
+            rstr_max = sprintf('%.5g',  abs(real(nr_max)));
+            istr_max = sprintf('%.5gi', abs(imag(nr_max)));
+
+            % print signs correctly
+            if (real(nr_min) < 0)
+                rstr_min = ['-' rstr_min];
+            end
+
+            if (real(nr_max) < 0)
+                rstr_max = ['-' rstr_max];
+            end
+
+            if (imag(nr_min) < 0)
+                istr_min = [' - ' istr_min];
+            else
+                istr_min = [' + ' istr_min];
+            end
+
+            if (imag(nr_max) < 0)
+                istr_max = [' - ' istr_max];
+            else
+                istr_max = [' + ' istr_max];
+            end
+
+            mins{i} = [rstr_min istr_min]; 
+            maxs{i} = [rstr_max istr_max]; 
+        end
+
+    % If temp is logical scalar, report value
+    elseif ( islogical(temp) && isscalar(temp) )
+        if (temp)
+            mins{i} = 'T';
+            maxs{i} = 'T';
+        else
+            mins{i} = 'F';
+            maxs{i} = 'F';
+        end
+
+    % For logical arrays, strings, structs, cells, etc. max/min not defined
     else
         mins{i} = '-';
-        maxes{i} = '-';
+        maxs{i} = '-';
     end
 
-    % Create attribute list
+    %---------------------------------------------------------------------------
+    %   Attributes
+    %---------------------------------------------------------------------------
     attributes{i} = '';
 
-    if (A(i).global)
+    if A(i).global
         attributes{i} = 'global';
     end
 
-    if (A(i).sparse) 
-        if (~isempty(attributes{i}))
+    if A(i).sparse 
+        if ~isempty(attributes{i})
             attributes{i} = [attributes{i} ',sparse'];
         else
             attributes{i} = 'sparse';
         end
     end
 
-    if (A(i).complex) 
-        if (~isempty(attributes{i}))
+    if A(i).complex 
+        if ~isempty(attributes{i})
             attributes{i} = [attributes{i} ',complex'];
         else
             attributes{i} = 'complex';
         end
     end
 
-    if (A(i).persistent) 
-        if (~isempty(attributes{i}))
+    if A(i).persistent 
+        if ~isempty(attributes{i})
             attributes{i} = [attributes{i} ',persistent'];
         else
             attributes{i} = 'persistent';
+        end
+    end
+    
+    % Print strings in attributes
+    if ischar(temp)
+        nchar = 18;
+        strlen = length(temp);
+
+        % If string is too long, print with elipses
+        pstr = ['''' sprintf('%.*s',nchar,temp)];
+        if (strlen <= nchar)
+            pstr = [pstr ''''];
+        else
+            pstr = [pstr(1:end-3) '...'];
+        end
+
+        % Print string in attribute list
+        if ~isempty(attributes{i})
+            attributes{i} = [attributes{i} ', ' pstr];
+        else
+            attributes{i} = pstr;
+        end
+    end
+
+    % Print number of fields in struct
+    if isstruct(temp)
+        nf = length(fieldnames(temp));
+        pstr = sprintf('%d fields', nf);
+
+        if ~isempty(attributes{i})
+            attributes{i} = [attributes{i} ', ' pstr];
+        else
+            attributes{i} = pstr;
         end
     end
 end
@@ -113,14 +214,14 @@ end
 %-------------------------------------------------------------------------------
 %       Create format specifiers
 %-------------------------------------------------------------------------------
-% TODO Add formatting for N-dim array sizes (i.e. 5x10x1000)
+% TODO: Add formatting for N-dim array sizes (i.e. 5x10x1000)
 % find longest string in each cell, or length of header
 nlen  = max( length('Name'), max(cellfun(@length, names)) );
 slen1 = max( 1, max(cellfun(@length, sizes1)) );
 slen2 = max( 2, max(cellfun(@length, sizes2)) );
 clen  = min( 8, max(cellfun(@length, classes)) ); % ignore long matlab classes
 milen = max( length('Min'), max(cellfun(@length, mins)) );
-malen = max( length('Max'), max(cellfun(@length, maxes)) );
+malen = max( length('Max'), max(cellfun(@length, maxs)) );
 alen  = max( length('Attributes'), max(cellfun(@length, attributes)) );
 
 nfmt  = ['%-' num2str(2+nlen)  '.' num2str(nlen)  's'];
@@ -146,11 +247,11 @@ else
     for i = 1:N
         if (ndim(i) < 4)
             fprintf(['  ' nfmt '  ' sfmt1 'x' sfmt2 '   ' cfmt ' ' mifmt ' ' mafmt '  ' afmt '\n'],...
-                names{i}, sizes1{i}, sizes2{i}, classes{i}, mins{i}, maxes{i}, attributes{i}) 
+                names{i}, sizes1{i}, sizes2{i}, classes{i}, mins{i}, maxs{i}, attributes{i}) 
         else
             % Need format to ensure class is aligned with the rest of classes
             fprintf(['  ' nfmt '     ' sfmt cfmt ' ' mifmt ' ' mafmt '  ' afmt '\n'],...
-                names{i}, sizes2{i}, classes{i}, mins{i}, maxes{i}, attributes{i}) 
+                names{i}, sizes2{i}, classes{i}, mins{i}, maxs{i}, attributes{i}) 
         end
     end
     fprintf('\n')
