@@ -1,5 +1,4 @@
 function [R, sigmaAllowed, sigma] = srank(A, tol, plot_flag)
-%
 % SRANK compute the effective rank of matrix A with tuneable parameters.
 %
 %   C = SRANK(A) returns the pseudo-inverse of a rectangular matrix A,
@@ -29,7 +28,7 @@ function [R, sigmaAllowed, sigma] = srank(A, tol, plot_flag)
 %    Author: Bernie Roesler
 %   Created: 05/12/15
 %
-% Last Modified: 02/04/2016, 16:25
+% Last Modified: 02/23/2016, 21:27
 %--------------------------------------------------------------------------
 
 % UNCOMMENT TO TEST CODE:
