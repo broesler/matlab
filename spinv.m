@@ -1,14 +1,13 @@
 function [C, sigmaAllowed, sigma] = spinv(A, tol, plot_flag)
-%
-% SPINV compute the pseudo-inverse of A with tuneable parameters.
+% SPINV compute the pseudo-inverse of A with tuneable parameters. {{{
 %
 %   C = SPINV(A) returns the pseudo-inverse of a rectangular matrix A,
 %       using the default parameters.
 %
 %   C = SPINV(A, tol) uses only the singular values greater than tol 
 %
-%   C = SPINV(A, tol, 1) plots the singular values, showing those within
-%       the chosen tolerance
+%   C = SPINV(A, tol, 1) plots the singular values in figure(plot_flag) for
+%       plot_flag > 0, showing those within the chosen tolerance
 %
 %   [C,SA] = SPINV(A,...) returns the allowed singular values used to 
 %       compute the pseudo-inverse
@@ -29,15 +28,16 @@ function [C, sigmaAllowed, sigma] = spinv(A, tol, plot_flag)
 %    Author: Bernie Roesler
 %   Created: 05/12/15
 %
-% Last Modified: 02/04/2016, 15:57
-%--------------------------------------------------------------------------
+% Last Modified: 02/23/2016, 18:34
+%--------------------------------------------------------------------------}}}
 
-% % UNCOMMENT TO TEST CODE:
+% % TEST CODE: {{{
 % clear all; close all; clc;
 % nargin = 3;
 % A = randn(5,3)*randn(3,10);   % 5 x 10 matrix not full rank
 % tol = 1e-9;
 % plot_flag = 1;
+% }}}
 
 if (nargin < 2)
     tol = 1e-9;        % Default order of magnitude
@@ -61,11 +61,11 @@ ind = find( sigma >= tol );
 sigmaAllowed = sigma(ind);
 
 %--------------------------------------------------------------------------
-if plot_flag == 1
+if (plot_flag > 0)
     % Plot the singular values vs. index
-    figure;
+    figure(plot_flag);
     semilogy(sigma, 'rx', 'MarkerSize', 10)
-    hold all
+    hold on; box on; grid on;
     
     % Highlight allowed sigma values
     semilogy(ind, sigmaAllowed, 'bx', 'MarkerSize', 10)
@@ -73,10 +73,9 @@ if plot_flag == 1
     % Include line at cutoff point
     semilogy([1 length(sigma)], [tol tol], 'r--', 'LineWidth', 1)
 
+    xlim([1 length(sigma)])
     xlabel('Index')
     ylabel('\sigma')
-
-    grid on
 end
 
 % (2) ----------------------- Extract square of S using only allowed sigmas
@@ -91,11 +90,12 @@ V1 = V(:,1:maxind);
 C = V1 * (S1 \ U1');
 
 
-% % TEST CODE: THESE SHOULD ALL BE 0!!
+% % TEST CODE: THESE SHOULD ALL BE 0!! {{{
 % maxval(abs( U1*S1*V1' -      A  ))
 % maxval(abs(    C      - pinv(A) ))
 % maxval(abs(    U'     -  inv(U) ))
 % maxval(abs(    V'     -  inv(V) ))
+% }}}
 
 %==============================================================================
 %==============================================================================
