@@ -1,11 +1,10 @@
 function [M,Cd,K,T] = getMCK(Ar,Br,Cr,Dr,C,Bf,sptol,plot_flag)
 % GETMCK identify physical parameters from recovered system matrices {{{
-%
 
 %  Created: 03/09/2016, 22:25
 %   Author: Bernie Roesler
 %
-% Last Modified: 03/09/2016, 22:39
+% Last Modified: 03/10/2016, 11:49
 %============================================================================}}}
 
 %-------------------------------------------------------------------------------
@@ -25,6 +24,10 @@ end
 
 if (size(Dr,2) ~= size(Br,2))
     error('Br and Dr matrices must have same number of columns.')
+end
+
+if nargin < 6
+    Bf = eye(size(Ar,1)/2, size(Ar,2)/2);
 end
 
 if nargin < 7
@@ -73,22 +76,32 @@ X = -Ac( (n/2+1):n, 1:n/2     );
 Y = -Ac( (n/2+1):n, (n/2+1):n );
 Z =  Bc( (n/2+1):n, :);
 
-% Define R matrix using Kronecker tensor product kron() and stack operator (:)
-R = [ kron(I,X') - kron(X',I);
-      kron(I,Y') - kron(Y',I);
-             kron(Z',I)       ];
+% If Bf is square and full-rank (i.e. we have a full set of actuators), 
+%   solution is trivial:
+if (size(Bf,1) == size(Bf,2)) && (srank(B) == size(Bf,2))
+    M  = Bf/Z;
+    Cd = Bf/Z*Y;
+    K  = Bf/Z*X;
 
-G = [ O(:);
-      O(:);
-      Bf(:) ];
+% Otherwise we need to get schwifty:
+else
+    % Define R matrix using Kronecker product kron() and stack operator (:)
+    R = [ kron(I,X') - kron(X',I);
+          kron(I,Y') - kron(Y',I);
+                 kron(Z',I)       ];
 
-% Calculate mass matrix from R*M(:) = G(:)
-MS = spinv(R,sptol,plot_flag) * G;
+    G = [ O(:);
+          O(:);
+          Bf(:) ];
 
-% Reshape M into 2x2 and find Cd,K
-M  = reshape(MS,2,2);
-Cd = M*Y;
-K  = M*X;
+    % Calculate stacked mass matrix from R*M(:) = G(:)
+    MS = spinv(R,sptol,plot_flag) * G;
+
+    % Reshape M into 2x2 and find Cd,K
+    M  = reshape(MS,2,2);
+    Cd = M*Y;
+    K  = M*X;
+end
 
 %===============================================================================
 %===============================================================================
