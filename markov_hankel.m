@@ -19,10 +19,10 @@ function H = markov_hankel(Y,N,m,k)
 %    where Y = [ D CB CAB CA^2B ... CA^(N-1)B ];
 %
 %  INPUTS:
-%    Y  q x Nr matrix of system Markov parameters
-%    N  1 x 1  scalar number of Markov parameters
-%    m  1 x 1  scalar size of Hankel matrix = m*q x m*r 
-%    k  1 x 1  order of Hankel matrix
+%    Y  q x (N+1)*r matrix of system Markov parameters
+%    N  1 x 1       scalar number of Markov parameters
+%    m  1 x 1       scalar size of Hankel matrix = m*q x m*r 
+%    k  1 x 1       order of Hankel matrix
 %
 %  OUTPUTS:
 %    H  m*q x m*r Hankel matrix
@@ -32,7 +32,7 @@ function H = markov_hankel(Y,N,m,k)
 %  Created: 02/11/2016, 17:55
 %   Author: Bernie Roesler
 %
-% Last Modified: 02/15/2016, 17:50
+% Last Modified: 03/09/2016, 20:40
 %===============================================================================
 
 % Input checking

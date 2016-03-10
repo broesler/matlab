@@ -1,5 +1,6 @@
 function [Ap,Bp,Cp,sigma] = realizeERA(H0,H1,m,tol,plot_flag)
-% REALIZEERA perform ERA algorithm for system realization from Hankel matrices
+% REALIZEERA perform ERA algorithm to recover system matrices (A,B,C) from
+% identified system Markov parameters, via Hankel matrices
 %
 %  [Ap,Bp,Cp] = REALIZEERA(H0,H1,m) returns the primed system matrices A',B',C'
 %    given the Hankel matrices H(0), H(1) 
@@ -18,7 +19,7 @@ function [Ap,Bp,Cp,sigma] = realizeERA(H0,H1,m,tol,plot_flag)
 %  Created: 02/15/2016, 16:56
 %   Author: Bernie Roesler
 %
-% Last Modified: 02/16/2016, 14:55
+% Last Modified: 03/09/2016, 20:46
 %===============================================================================
 
 % Input checking

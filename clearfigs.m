@@ -11,5 +11,3 @@ fh = findall(0,'type','figure');
 for i = 1:length(fh)
      clf(fh(i));
 end
-
-end % function clearfigs
