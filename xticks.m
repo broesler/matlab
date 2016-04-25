@@ -1,10 +1,9 @@
+function xticks(axis,xticks)
 % Labels every other tick mark on the axis.
 %
 % Need to give an odd number of tick marks, or else you won't label the end point
 %
-% Example:  ticks(gca,[1:0.1:2],[0:0.1:1])
-
-function xticks(axis,xticks)
+% Example:  ticks(gca,[1:0.1:2])
 
 xticklabels = cell(1,length(xticks));
 

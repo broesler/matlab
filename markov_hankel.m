@@ -1,5 +1,5 @@
 function H = markov_hankel(Y,N,m,k)
-% MARKOV_HENKEL create Hankel matrices from system Markov parameters
+% MARKOV_HENKEL create Hankel matrices from system Markov parameters {{{
 %
 %  H = markov_hankel(Y,N,m,k) returns the Hankel matrix of order k, size m,
 %    given by
@@ -32,8 +32,8 @@ function H = markov_hankel(Y,N,m,k)
 %  Created: 02/11/2016, 17:55
 %   Author: Bernie Roesler
 %
-% Last Modified: 03/09/2016, 20:40
-%===============================================================================
+% Last Modified: 03/15/2016, 11:03
+%============================================================================}}}
 
 % Input checking
 if (nargin < 3)
@@ -57,7 +57,7 @@ for i = k:k+m-1
 
     % NOTE:
     %+  H row indices do not change with k
-    %+  Shift Y cols by r to skip D (Y = [ D CB CAB ... ])
+    %+  Shift Y cols by r to skip D (Y = [D CB CAB ... ])
 end
 
 %===============================================================================
