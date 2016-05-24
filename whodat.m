@@ -91,11 +91,11 @@ for i = 1:N
 
     if isnumeric(temp)
         if isreal(temp)
-            mins{i} = sprintf('%.5g', min(temp(:)));
-            maxs{i} = sprintf('%.5g', max(temp(:)));
+            mins{i} = sprintf('%.5g', full(min(temp(:))));
+            maxs{i} = sprintf('%.5g', full(max(temp(:))));
         else % iscomplex...
-            nr_min = min(temp(:));
-            nr_max = max(temp(:));
+            nr_min = full(min(temp(:)));
+            nr_max = full(max(temp(:)));
 
             rstr_min = sprintf('%.5g',  abs(real(nr_min)));
             istr_min = sprintf('%.5gi', abs(imag(nr_min)));
