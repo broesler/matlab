@@ -50,19 +50,6 @@ function S = whodat(varargin)
 % varargin = {'^err','-file','test.mat','-regexp'}; % file with regexp
 % varargin = {'-file'}; % file with no filename
 
-% inputParser is cute, but doesn't allow the "switch"-type arguments like the
-% actual 'whos' function:
-% p = inputParser;
-%
-% % Add name-value pairs to accept as input
-% default_filename = '';
-% errorstr = 'File name wasn''t provided.';
-% val_func = @(x) assert(ischar(x) && ~isempty(x),errorstr);
-% addParameter(p,'-file',default_filename,val_func);
-%
-% parse(p,'-file',varargin{:});
-% p.Results.filename
-
 %-------------------------------------------------------------------------------
 %        Main Process:
 %-------------------------------------------------------------------------------
