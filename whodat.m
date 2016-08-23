@@ -1,7 +1,7 @@
 function S = whodat(varargin)
-% WHODAT whos but with custom formatting to show max/min values {{{
+% WHODAT whos but with custom formatting to show max/min values
 %
-%  A = WHODAT returns a structure of all variables in workspace, with fields:
+%  A = WHODAT(...) returns a structure with fields:
 %      name           char
 %      size           1x2 double
 %      bytes          1x1 double
@@ -23,22 +23,58 @@ function S = whodat(varargin)
 %    str = 'this is a very very big string.';           % string
 %    t = struct('a',a,'b',b,'c',c,'v',v,'str',str);     % struct
 %    r = {a, b, c; v, str, t};                          % cell array
-
+%
 %    whodat
 %
-%  See also WHOS
+%   See also WHO, CLEAR, CLEARVARS, SAVE, LOAD.
 
 %  Created: 01/06/2016, 14:50
 %   Author: Bernie Roesler
-%============================================================================}}}
+%===============================================================================
 
-% NOTE: Allowing arguments like whos does not work, because 
-%+    A = evalin('caller','whos N x y') 
-%+ is an invalid MATLAB expression, but 
-%+    evalin('caller', 'A = whos('N','x','y')')
-%+ just assigns A in the caller's workspace, defeating the purpose.
+%-------------------------------------------------------------------------------
+%       Parse Inputs: 
+%-------------------------------------------------------------------------------
+% -file takes first argument following it (not including '-regexp') as parameter
+% -regexp|none takes *all* arguments except the first after '-file' as patterns,
+%   regardless of its position in the input
+%
+% Parse inputs for filename or regexp
+% varargin = {'wM'}; % one name
+% varargin = {'err*'}; % wildcard
+% varargin = {'-file','test.mat'}; % file with wildcard
+% varargin = {'-file','test.mat','err*'}; % file with wildcard
+% varargin = {'-regexp','^e.*'}; % regexp
+% varargin = {'-file','test.mat','-regexp','^err'}; % file with regexp
+% varargin = {'-regexp','^err','-file','test.mat'}; % file with regexp
+% varargin = {'^err','-file','test.mat','-regexp'}; % file with regexp
+% varargin = {'-file'}; % file with no filename
 
-% Structure of variables in calling function workspace (i.e. main)
+% inputParser is cute, but doesn't allow the "switch"-type arguments like the
+% actual 'whos' function:
+% p = inputParser;
+%
+% % Add name-value pairs to accept as input
+% default_filename = '';
+% errorstr = 'File name wasn''t provided.';
+% val_func = @(x) assert(ischar(x) && ~isempty(x),errorstr);
+% addParameter(p,'-file',default_filename,val_func);
+%
+% parse(p,'-file',varargin{:});
+% p.Results.filename
+
+%-------------------------------------------------------------------------------
+%        Main Process:
+%-------------------------------------------------------------------------------
+% NOTE: Using arguments like whos does not work, because 
+%    A = evalin('caller','whos N x y') 
+% is an invalid MATLAB expression, but 
+%    evalin('caller', 'A = whos('N','x','y')')
+% just assigns A in the caller's workspace, defeating the purpose.
+%
+% Instead, implement arguments when printing things out, below.
+
+% Get structure of variables in calling function workspace (i.e. main)
 A = evalin('caller','whos');
 
 % Make sure we have variables to list
@@ -66,7 +102,7 @@ for i = 1:N
     names{i} = A(i).name;
 
     %---------------------------------------------------------------------------
-    %   Size column
+    %       Size column
     %---------------------------------------------------------------------------
     ndim(i) = length(A(i).size);
 
@@ -80,12 +116,12 @@ for i = 1:N
     end
 
     %---------------------------------------------------------------------------
-    %   Type of variable
+    %       Type of variable
     %---------------------------------------------------------------------------
     classes{i} = A(i).class;
 
     %---------------------------------------------------------------------------
-    %   Max/min values
+    %       Max/min values
     %---------------------------------------------------------------------------
     temp = evalin('caller', A(i).name);
 
@@ -145,7 +181,7 @@ for i = 1:N
     end
 
     %---------------------------------------------------------------------------
-    %   Attributes
+    %       Attributes
     %---------------------------------------------------------------------------
     attributes{i} = '';
 
@@ -202,6 +238,17 @@ for i = 1:N
     if isstruct(temp)
         nf = length(fieldnames(temp));
         pstr = sprintf('%d fields', nf);
+
+        if ~isempty(attributes{i})
+            attributes{i} = [attributes{i} ', ' pstr];
+        else
+            attributes{i} = pstr;
+        end
+    end
+
+    % Print in-line functions
+    if isa(temp,'function_handle')
+        pstr = sprintf('%s', func2str(temp));
 
         if ~isempty(attributes{i})
             attributes{i} = [attributes{i} ', ' pstr];
