@@ -40,6 +40,8 @@ function S = whodat(varargin)
 %   regardless of its position in the input
 %
 % Parse inputs for filename or regexp
+
+% TEST CODE:
 % varargin = {'wM'}; % one name
 % varargin = {'err*'}; % wildcard
 % varargin = {'-file','test.mat'}; % file with wildcard
@@ -49,6 +51,57 @@ function S = whodat(varargin)
 % varargin = {'-regexp','^err','-file','test.mat'}; % file with regexp
 % varargin = {'^err','-file','test.mat','-regexp'}; % file with regexp
 % varargin = {'-file'}; % file with no filename
+% nargin = length(varargin);
+
+% Set defaults
+file_flag   = false;
+regexp_flag = false;
+pats        = {};
+
+if nargin > 0
+    % Check for '-file' and/or '-regexp' flags, and store indices in varargin
+    fileidx     = find(strcmp(varargin, '-file'));
+    regexpidx   = find(strcmp(varargin, '-regexp'));
+    filenameidx = [];
+
+    % Check for a regexp request
+    if ~isempty(regexpidx)
+        regexp_flag = true;
+    end
+
+    % Check for a file request
+    if ~isempty(fileidx) 
+        file_flag = true;
+
+        % if '-file' is the last argument, throw an error
+        if fileidx == nargin
+            error('File name not given.')
+        else
+            if ~regexp_flag
+                % if we don't have a regexp, then just get the filename
+                filename = varargin{fileidx+1};
+                filenameidx = fileidx+1;
+            else
+                % if the next argument after '-file' is not '-regexp'
+                if (fileidx+1 ~= regexpidx)
+                    filename = varargin{fileidx+1};
+                    filenameidx = fileidx+1;
+                else
+                    % else take the first argument after '-regexp'
+                    filename = varargin{regexpidx+1};
+                    filenameidx = regexpidx+1;
+                end
+            end
+        end
+    end
+
+    % The rest of the inputs are patterns
+    patidx = setdiff(1:nargin,[fileidx filenameidx regexpidx]);
+
+    if ~isempty(patidx)
+        pats = varargin{patidx};
+    end
+end
 
 %-------------------------------------------------------------------------------
 %        Main Process:
@@ -62,14 +115,37 @@ function S = whodat(varargin)
 % Instead, implement arguments when printing things out, below.
 
 % Get structure of variables in calling function workspace (i.e. main)
-A = evalin('caller','whos');
+if file_flag
+    A = whos('-file',filename);
+    M = matfile(filename,'Writable',false);    % load matfile for parsing
+else
+    A = evalin('caller','whos');
+end
 
 % Make sure we have variables to list
 if isempty(A)
     return
-else
-    N = numel(A);
 end
+
+% Get all names matching patterns
+allnames = {A.name}';
+
+if isempty(pats)
+    matchidx = 1:numel(A); % print all items
+else
+    % Else search for patterns
+    if regexp_flag
+        matchidx = [];
+        for i = 1:length(pats)
+            ismatch = ~cellfun(@isempty, regexp(allnames,pats{i}));
+            matchidx = [matchidx; find(ismatch)];
+        end
+    else
+    end
+end
+
+% Number of variables matching patterns
+N = length(matchidx);
 
 % Arrays to be printed in each column
 names       = cell(N,1);
@@ -84,7 +160,12 @@ ndim        = zeros(N,1);
 %-------------------------------------------------------------------------------
 %       loop over each variable to build columns
 %-------------------------------------------------------------------------------
-for i = 1:N
+% Stab at vectorization:
+% logical indexing for if statements
+% names = {A(:).name}';
+% sizes = cellfun(@(x) sprintf('%d', x), {A.size}); 
+
+for i = matchidx
     % Varable names
     names{i} = A(i).name;
 
@@ -110,7 +191,14 @@ for i = 1:N
     %---------------------------------------------------------------------------
     %       Max/min values
     %---------------------------------------------------------------------------
-    temp = evalin('caller', A(i).name);
+    % Get actual value as a temp variable
+    if file_flag
+        % use "dynamic field name"
+        temp = M.(A(i).name);
+    else
+        % evaluate the variable in the parent workspace
+        temp = evalin('caller', A(i).name);
+    end
 
     if isnumeric(temp)
         if isreal(temp)
@@ -150,8 +238,6 @@ for i = 1:N
             mins{i} = [rstr_min istr_min]; 
             maxs{i} = [rstr_max istr_max]; 
         end
-
-    % If temp is logical scalar, report value
     elseif ( islogical(temp) && isscalar(temp) )
         if (temp)
             mins{i} = 'T';
@@ -160,7 +246,6 @@ for i = 1:N
             mins{i} = 'F';
             maxs{i} = 'F';
         end
-
     % For logical arrays, strings, structs, cells, etc. max/min not defined
     else
         mins{i} = '-';
