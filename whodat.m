@@ -99,7 +99,7 @@ if nargin > 0
     patidx = setdiff(1:nargin,[fileidx filenameidx regexpidx]);
 
     if ~isempty(patidx)
-        pats = varargin{patidx};
+        pats = varargin(patidx); % pats stays as cell array
     end
 end
 
@@ -134,18 +134,32 @@ if isempty(pats)
     matchidx = 1:numel(A); % print all items
 else
     % Else search for patterns
-    if regexp_flag
-        matchidx = [];
-        for i = 1:length(pats)
-            ismatch = ~cellfun(@isempty, regexp(allnames,pats{i}));
-            matchidx = [matchidx; find(ismatch)];
+    matchidx = [];
+    for i = 1:length(pats)
+        if regexp_flag
+            % Inpterpret input as a regexp
+            myregexp = regexp(allnames,pats{i});
+        else
+            % Translate wildcard input into regexp pattern
+            myregexp = regexp(allnames,regexptranslate('wildcard',pats{i}));
         end
-    else
+        % logical expression on cell array
+        ismatch = ~cellfun(@isempty, myregexp);
+        % get indices of variables matching pattern
+        matchidx = [matchidx; find(ismatch)];
     end
 end
 
 % Number of variables matching patterns
 N = length(matchidx);
+
+% Make sure we have matches
+if N == 0
+    return
+end
+
+% Redefine 'A' to just the matches
+A = A(matchidx);
 
 % Arrays to be printed in each column
 names       = cell(N,1);
@@ -165,7 +179,7 @@ ndim        = zeros(N,1);
 % names = {A(:).name}';
 % sizes = cellfun(@(x) sprintf('%d', x), {A.size}); 
 
-for i = matchidx
+for i = 1:N
     % Varable names
     names{i} = A(i).name;
 
