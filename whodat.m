@@ -42,16 +42,43 @@ function S = whodat(varargin)
 % Parse inputs for filename or regexp
 
 % TEST CODE:
-% varargin = {'wM'}; % one name
-% varargin = {'err*'}; % wildcard
-% varargin = {'-file','test.mat'}; % file with wildcard
-% varargin = {'-file','test.mat','err*'}; % file with wildcard
-% varargin = {'-regexp','^e.*'}; % regexp
+% NOTE: use with engs91_lab6_1.m, or 'load test.mat' in ~/src/gnuplot_scripts/
+% varargin = {'wM'};                                % one name
+% varargin = {'err'};                               % no matches (exact string)
+% varargin = {'err*'};                              % wildcard
+% varargin = {'-file','test.mat'};                  % file with wildcard
+% varargin = {'-file','test.mat','err*'};           % file with wildcard
+% varargin = {'-regexp','^e.*'};                    % regexp
 % varargin = {'-file','test.mat','-regexp','^err'}; % file with regexp
 % varargin = {'-regexp','^err','-file','test.mat'}; % file with regexp
 % varargin = {'^err','-file','test.mat','-regexp'}; % file with regexp
-% varargin = {'-file'}; % file with no filename
+% varargin = {'-file'};                             % file with no filename
 % nargin = length(varargin);
+
+%%%%% Current bugs: 
+% >> whodat err
+%   Name       Size   Class     Min         Max  Attributes
+%
+%   errorAB    5x81   double      0    0.003014
+%   errorE     5x81   double      0     0.11125
+%   errorM     5x81   double      0  0.00070505
+%   errorME    5x81   double      0    0.016481
+%   errorRE    5x81   double      0  5.4522e-05
+% >> whos err % NO OUTPUT!!
+% >>
+% >> whos -regexp err
+%   Name         Size            Bytes  Class     Attributes
+%
+%   errorAB      5x81             3240  double
+%   errorE       5x81             3240  double
+%   errorM       5x81             3240  double
+%   errorME      5x81             3240  double
+%   errorRE      5x81             3240  double
+%
+% >>
+
+% 'whodat err' is getting treated like regexp... needs to be treated like normal
+% pattern. Check where regexp_flag is set...
 
 % Set defaults
 file_flag   = false;
@@ -137,14 +164,17 @@ else
     matchidx = [];
     for i = 1:length(pats)
         if regexp_flag
-            % Inpterpret input as a regexp
-            myregexp = regexp(allnames,pats{i});
+            % Interpret input as a regexp
+            match_bool = regexp(allnames,pats{i});
         else
             % Translate wildcard input into regexp pattern
-            myregexp = regexp(allnames,regexptranslate('wildcard',pats{i}));
+            regexp_from_wildcard = ['^' regexptranslate('wildcard', pats{i}) '$'];
+            match_bool = regexp(allnames, regexp_from_wildcard);
         end
+
         % logical expression on cell array
-        ismatch = ~cellfun(@isempty, myregexp);
+        ismatch = ~cellfun(@isempty, match_bool);
+
         % get indices of variables matching pattern
         matchidx = [matchidx; find(ismatch)];
     end
@@ -352,7 +382,7 @@ end
 nlen  = max( length('Name'), max(cellfun(@length, names)) );
 slen1 = max( 1, max(cellfun(@length, sizes1)) );
 slen2 = max( 2, max(cellfun(@length, sizes2)) );
-clen  = min( 8, max(cellfun(@length, classes)) ); % ignore long matlab classes
+clen  = min( 8, max(cellfun(@length, classes)+1) ); % ignore long matlab classes
 milen = max( length('Min'), max(cellfun(@length, mins)) );
 malen = max( length('Max'), max(cellfun(@length, maxs)) );
 alen  = max( length('Attributes'), max(cellfun(@length, attributes)) );
