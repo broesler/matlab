@@ -10,8 +10,8 @@ fh = findall(0,'type','figure');
 
 for i = 1:length(fh)
     % if figure is already empty, just close it
-    if isempty(get(fh,'Children'))
-        close(fh);
+    if isempty(get(fh(i),'Children'))
+        close(fh(i));
     else
         clf(fh(i));
     end
