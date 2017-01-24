@@ -6,6 +6,10 @@ function fh = clearfigs()
 %   h = clearfigs() also returns a vector of handles to each figure
 %
 
+% Created: 01/24/2017, 14:35
+%  Author: Bernie Roesler
+%===============================================================================
+
 fh = findall(0,'type','figure');
 
 for i = 1:length(fh)
