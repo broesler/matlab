@@ -21,7 +21,7 @@ x_pi2_flag = 0;
 x_pi4_flag = 0;
 x_pi8_flag = 0;
 
-if     all( abs(mod(xticks/(pi/1),1)) < tol  |  abs(mod(xticks/(pi/1),1) -1) < tol  |  abs(mod(xticks/(pi/1),1) +1) < tol )  % if xticks are even multiples of pi.  Can't do mod(...) == 1, since mod might return 0.000000002 or 0.9999999998
+if     all( abs(mod(xticks,pi)) < tol )  % if xticks are even multiples of pi.  Can't do mod(...) == 1, since mod might return 0.000000002 or 0.9999999998
     x_pi1_flag = 1;
     
 elseif all( abs(mod(xticks/(pi/2),1)) < tol  |  abs(mod(xticks/(pi/2),1) -1) < tol  |  abs(mod(xticks/(pi/2),1) +1) < tol )  % if xticks are even multiples of pi/2
