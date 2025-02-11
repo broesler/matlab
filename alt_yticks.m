@@ -2,9 +2,9 @@
 %
 % Need to give an odd number of tick marks, or else you won't label the end point
 %
-% Example:  yticks(gca,[1:0.1:2])
+% Example:  alt_yticks(gca,[1:0.1:2])
 
-function yticks(axis,yticks)
+function alt_yticks(axis,yticks)
 
 yticklabels = cell(1,length(yticks));
 
